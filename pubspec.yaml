@@ -1,0 +1,42 @@
+name: foodie_app
+description: What Can I Cook Right Now? - Smart Meal Planner App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  provider: ^6.1.1
+
+  # Local Storage
+  shared_preferences: ^2.2.2
+
+  # HTTP for AI API
+  http: ^1.1.0
+
+  # UI Enhancements
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.3.0
+  lottie: ^3.0.0
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  flutter_staggered_animations: ^1.1.1
+  dotted_border: ^2.1.0
+  percent_indicator: ^4.2.3
+  uuid: ^4.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/animations/
