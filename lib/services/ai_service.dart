@@ -3,91 +3,13 @@ import 'package:http/http.dart' as http;
 import '../models/models.dart';
 
 class AIService {
-//   static const String _baseUrl = 'https://api.anthropic.com/v1/messages';
-//   // NOTE: Replace with your actual Anthropic API key
-//   static const String _apiKey = 'YOUR_ANTHROPIC_API_KEY_HERE';
-//   static const String _model = 'claude-sonnet-4-20250514';
-//
-//   /// Suggests meals based on available ingredients
-//   static Future<List<SuggestedMeal>> suggestMeals(List<String> ingredients) async {
-//     if (ingredients.isEmpty) return [];
-//
-//     final prompt = '''
-// You are a creative chef. Given these available ingredients: ${ingredients.join(', ')}
-//
-// Suggest exactly 4 different meals that can be made primarily using these ingredients.
-// For each meal provide a complete recipe.
-//
-// Respond ONLY with a valid JSON array (no markdown, no explanation), like this:
-// [
-//   {
-//     "name": "Meal Name",
-//     "description": "Brief appetizing description",
-//     "cookTime": "25 min",
-//     "difficulty": "Easy",
-//     "emoji": "🍳",
-//     "cuisine": "Indian",
-//     "calories": 350,
-//     "usedIngredients": ["ingredient1", "ingredient2"],
-//     "steps": [
-//       "Step 1: Do this first...",
-//       "Step 2: Then do this...",
-//       "Step 3: Finally...",
-//       "Step 4: Serve and enjoy!"
-//     ]
-//   }
-// ]
-//
-// Rules:
-// - Use only or mostly the given ingredients
-// - Steps should be detailed and practical (minimum 5 steps per meal)
-// - Difficulty must be one of: Easy, Medium, Hard
-// - Emoji must be a food-relevant emoji
-// - Make it practical for home cooking
-// ''';
-//
-//     try {
-//       final response = await http.post(
-//         Uri.parse(_baseUrl),
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'x-api-key': _apiKey,
-//           'anthropic-version': '2023-06-01',
-//         },
-//         body: jsonEncode({
-//           'model': _model,
-//           'max_tokens': 2000,
-//           'messages': [
-//             {'role': 'user', 'content': prompt}
-//           ],
-//         }),
-//       );
-//
-//       if (response.statusCode == 200) {
-//         final data = jsonDecode(response.body);
-//         final text = data['content'][0]['text'] as String;
-//         final cleaned = text.trim().replaceAll(RegExp(r'```json|```'), '').trim();
-//         final List<dynamic> mealsJson = jsonDecode(cleaned);
-//         return mealsJson.map((m) => SuggestedMeal.fromJson(m)).toList();
-//       } else {
-//         throw Exception('API Error: ${response.statusCode} - ${response.body}');
-//       }
-//     } catch (e) {
-//       // Return mock data if API fails (for demo/development)
-//       return _getMockMeals(ingredients);
-//     }
-//   }
-
-  static const String _baseUrl = 'http://192.168.1.3:11434/api/generate';
-  static const String _model = 'mistral';
+  static const String _baseUrl = 'https://api.mistral.ai/v1/chat/completions';
+  static const String _apiKey = '8HozjxlXKsB2qwmsRFCF864RHlaNJprp'; // 🔑 Replace this
+  static const String _model = 'mistral-large-latest';
 
   /// Suggests meals based on available ingredients
-  static Future<List<SuggestedMeal>> suggestMeals(
-      List<String> ingredients) async {
-    print("before promptt");
+  static Future<List<SuggestedMeal>> suggestMeals(List<String> ingredients) async {
     if (ingredients.isEmpty) return [];
-
-    print("before prompt");
 
     final prompt = '''
 You are a creative chef. Given these available ingredients: ${ingredients.join(', ')}
@@ -122,36 +44,33 @@ Rules:
 - Make it practical for home cooking
 ''';
 
-    print("after prompt");
-
     try {
       final response = await http.post(
         Uri.parse(_baseUrl),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
         },
-        body: jsonEncode({"model": _model, "prompt": prompt, "stream": false}),
+        body: jsonEncode({
+          'model': _model,
+          'messages': [
+            {'role': 'user', 'content': prompt},
+          ],
+          'temperature': 0.7,
+        }),
       );
-
-      print("here");
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
-        final text = data['response'] as String;
-
-        // Clean response (important)
-        final cleaned =
-            text.trim().replaceAll(RegExp(r'```json|```'), '').trim();
-
+        final text = data['choices'][0]['message']['content'] as String;
+        final cleaned = text.trim().replaceAll(RegExp(r'```json|```'), '').trim();
         final List<dynamic> mealsJson = jsonDecode(cleaned);
-
         return mealsJson.map((m) => SuggestedMeal.fromJson(m)).toList();
       } else {
         throw Exception('API Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print("Ollama Error: $e");
+      print("Mistral Error: $e");
       return _getMockMeals(ingredients);
     }
   }

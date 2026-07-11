@@ -162,7 +162,10 @@ class _CookNowScreenState extends State<CookNowScreen> {
                                 label: 'Find Recipes ✨',
                                 icon: Icons.auto_awesome_rounded,
                                 loading: cookNow.state == CookNowState.loading,
-                                onTap: () => cookNow.getSuggestions(),
+                                onTap: () {
+                                  FocusScope.of(context).unfocus();
+                                  cookNow.getSuggestions();
+                                },
                               ),
                             ),
                             const SizedBox(width: 12),

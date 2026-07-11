@@ -166,6 +166,7 @@ class IngredientChip extends StatelessWidget {
 }
 
 // ─── Meal Card ───────────────────────────────────────────────────────────────
+// ─── Meal Card ───────────────────────────────────────────────────────────────
 class MealSuggestionCard extends StatelessWidget {
   final SuggestedMeal meal;
   final VoidCallback onTap;
@@ -248,6 +249,8 @@ class MealSuggestionCard extends StatelessWidget {
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -262,6 +265,7 @@ class MealSuggestionCard extends StatelessWidget {
                         ],
                       ),
                     ),
+                    const SizedBox(width: 8),
                     const Icon(
                       Icons.arrow_forward_ios_rounded,
                       color: FoodieTheme.primary,
@@ -271,43 +275,28 @@ class MealSuggestionCard extends StatelessWidget {
                 ),
               ),
 
-              // Stats row
+              // Stats row — wrapped to prevent overflow
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-                child: Row(
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
                   children: [
-                    _StatBadge(icon: Icons.timer_outlined, label: meal.cookTime, color: FoodieTheme.secondary),
-                    const SizedBox(width: 8),
-                    _StatBadge(icon: Icons.local_fire_department_outlined, label: '${meal.calories} cal', color: FoodieTheme.accentPink),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _difficultyColor.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: _difficultyColor.withOpacity(0.4)),
-                      ),
-                      child: Text(
-                        meal.difficulty,
-                        style: GoogleFonts.poppins(
-                          color: _difficultyColor, fontSize: 11, fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    _StatBadge(
+                      icon: Icons.timer_outlined,
+                      label: meal.cookTime,
+                      color: FoodieTheme.secondary,
                     ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: FoodieTheme.accentPurple.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        meal.cuisine,
-                        style: GoogleFonts.poppins(
-                          color: FoodieTheme.accentPurple, fontSize: 11, fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                    _StatBadge(
+                      icon: Icons.local_fire_department_outlined,
+                      label: '${meal.calories} cal',
+                      color: FoodieTheme.accentPink,
                     ),
+                    _DifficultyBadge(
+                      label: meal.difficulty,
+                      color: _difficultyColor,
+                    ),
+                    _CuisineBadge(label: meal.cuisine),
                   ],
                 ),
               ),
@@ -349,6 +338,53 @@ class _StatBadge extends StatelessWidget {
     );
   }
 }
+
+class _DifficultyBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _DifficultyBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.4)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.poppins(color: color, fontSize: 11, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+class _CuisineBadge extends StatelessWidget {
+  final String label;
+
+  const _CuisineBadge({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: FoodieTheme.accentPurple.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.poppins(
+          color: FoodieTheme.accentPurple, fontSize: 11, fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
+
 
 // ─── Loading Shimmer ─────────────────────────────────────────────────────────
 class FoodieShimmerCard extends StatelessWidget {
